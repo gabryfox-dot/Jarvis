@@ -98,3 +98,14 @@ window.fetch = async (u, o = {}) => {
   if (p === "/api/chat/stream") { const b = body(); return sse((emit) => think(String(b.message || ""), b.history, emit)); }
   return J({ error: "non disponibile sul telefono" }, 503);
 };
+
+// Touch: pulsante per scrivere (su iPhone non c'è il tasto T) + dettaglio dell'errore del microfono.
+const md = navigator.mediaDevices, gum = md?.getUserMedia?.bind(md);
+if (gum) md.getUserMedia = (c) => gum(c).catch((e) => {
+  setTimeout(() => { const h = document.querySelector("#hint span"); if (h) h.textContent += ` · ERRORE: ${e.name}`; }, 300);
+  throw e; });
+const btn = document.createElement("button");
+btn.textContent = "SCRIVI";
+btn.style.cssText = "position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:99;padding:12px 18px;background:#fff;color:#000;border:0;font:600 13px Inter,sans-serif;letter-spacing:.2em";
+btn.onclick = () => { const f = document.querySelector("#typeBox"); f.classList.toggle("show"); f.querySelector("input").focus(); };
+document.body.appendChild(btn);
